@@ -1,0 +1,9 @@
+{
+  "_comment": "自定义 flag 前缀（不含花括号）。replace_default=false 时与内置前缀合并（默认）；true 时完全覆盖内置列表。prefixes 留空则仅使用内置前缀。可手动编辑此文件，或用 solve.py --add-prefix / --remove-prefix / --reset-prefixes 管理。",
+  "_examples": [
+    "myteam",
+    "demoteam"
+  ],
+  "replace_default": false,
+  "prefixes": []
+}

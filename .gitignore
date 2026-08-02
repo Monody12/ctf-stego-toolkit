@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+.venv/
+venv/
+env/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Local challenge data / answers / generated artifacts.
+# These files may contain copyrighted CTF assets, unreleased answers, or bulky
+# solver outputs. Keep them local unless you intentionally curate examples.
+questions/
+*_out/
+**/*_out/
+**/batch_reports*/
+**/flags.md
+**/*题解*.md
+**/*验证报告*.md
+
+# Scratch files generated while solving individual tasks
+misc*.png
+misc*.jpg
+misc*.jpeg
+misc*.gif
+misc*.bmp
+misc*.tif
+misc*.tiff
+misc*.psd
+file.jpg
+fixed.bmp
+hidden.zlib
+_*.png
+_*.jpg
+_*.bmp
+m25_*.png
+2.png
+2_out/
+
+# Third-party source trees downloaded locally during environment setup
+binwalk-master/
+delink-main/

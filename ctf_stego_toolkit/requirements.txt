@@ -1,0 +1,25 @@
+# CTF 图片隐写工具 — 可选依赖
+# 核心算法只用 Python 标准库(zlib/struct/base64/re 等), 零必需依赖。
+# 以下是增强项, 缺失时工具会优雅降级:
+
+# 图像像素操作(OCR增强/像素分析), 可选
+Pillow>=9.0.0
+
+# 数值计算(可选, 像素统计分析用)
+numpy>=1.20.0
+
+# 外部 CLI 工具(非 pip, 通过系统包管理器安装, 见 docs/环境安装指南.md):
+#   file, strings, xxd      - 基础工具(通常自带)
+#   exiftool                - 元数据分析
+#   binwalk                 - 附加文件扫描与提取
+#   pngcheck                - PNG chunk 结构
+#   zsteg                   - PNG/BMP LSB 隐写 (gem install zsteg, 需 ruby)
+#   tesseract               - OCR 文字识别
+#   gocr                    - 备用 OCR
+#   zbarimg                 - QR/条码识别
+#   qrencode                - QR 测试生成
+#   imagemagick(convert)    - 图像处理(GIF拆帧/增强)
+#   ffmpeg                  - 视频/动图/罕见格式转换
+#   bpgdec                  - BPG 图片解码
+#   steghide                - JPEG steghide 隐写
+#   stegseek/outguess/jphide/openstego - 密码型图片隐写(默认只提示)

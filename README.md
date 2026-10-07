@@ -40,9 +40,12 @@ ctf-stego-solve questions \
 
 ```bash
 python3 -m pip install -e ".[webui]"     # 纯 Python 依赖（Flask + SQLAlchemy）
-ctf-stego-webui                          # 默认 http://127.0.0.1:8800
-ctf-stego-webui --port 9000 --workers 4 --timeout 600
+./webui-start.sh                         # 一键启动（等价于 ctf-stego-webui，默认 http://127.0.0.1:8800）
+./webui-stop.sh                          # 一键停止
+ctf-stego-webui --port 9000 --workers 4 --timeout 600   # 手动起时自定义参数
 ```
+
+启停脚本会自动定位仓库根与 venv，已在运行时幂等退出；端口/超时可用环境变量 `STEGO_WEBUI_PORT`/`STEGO_WEBUI_TIMEOUT` 覆盖，日志在 `webui_data/webui.log`。
 
 - 数据目录默认 `<仓库根>/webui_data/`（SQLite + 题目文件 + 前缀配置，已 gitignore），可用 `--data-dir` 或环境变量 `STEGO_WEBUI_DATA` 改放位置。
 - 导入方式：拖拽多图 / zip 包（顶层子目录 = 一道题，兼容 `misc{N}/` 习惯）/ 直接填服务器本地目录路径。

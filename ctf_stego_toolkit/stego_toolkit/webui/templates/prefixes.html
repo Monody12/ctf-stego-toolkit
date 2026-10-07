@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}flag 前缀 — Stego WebUI{% endblock %}
+{% block content %}
+<section class="panel">
+  <div class="panel-head"><h2>flag 前缀管理</h2></div>
+  <p class="dim">
+    前缀用于识别 <code>xxx{...}</code> 形式的 flag，大小写不敏感，长前缀优先。
+    修改写入 <code id="cfg-path">{{ state.config_path }}</code>，
+    每次分析都在新子进程中进行，<b>下一题立即生效</b>，无需重启。
+  </p>
+  <div class="import-row">
+    <input id="new-prefix" type="text" placeholder="新前缀（不含花括号，如 myteam2026）">
+    <button id="btn-add-prefix" class="btn">添加</button>
+    <button id="btn-reset-prefixes" class="btn btn-danger">清空自定义</button>
+  </div>
+  <label class="check">
+    <input type="checkbox" id="chk-replace" {{ 'checked' if state.replace_default else '' }}>
+    replace_default — 完全覆盖内置列表（不勾选则与内置合并）
+  </label>
+</section>
+
+<section class="panel">
+  <div class="panel-head"><h2>自定义前缀（{{ state.user|length }}）</h2></div>
+  {% if state.user %}
+  <ul class="prefix-list">
+    {% for name in state.user %}
+    <li>
+      <code>{{ name }}{...}</code>
+      {% if state.user_tags[loop.index0] %}<span class="tag">也属于内置</span>{% endif %}
+      <button class="btn btn-sm btn-danger act-remove" data-name="{{ name }}">移除</button>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}<p class="dim">暂无自定义前缀，仅使用内置 {{ state.builtin|length }} 个。</p>{% endif %}
+</section>
+
+<section class="panel">
+  <div class="panel-head"><h2>内置前缀（{{ state.builtin|length }}）</h2></div>
+  <div class="chips">
+    {% for name in state.builtin %}<span class="chip">{{ name }}</span>{% endfor %}
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel-head"><h2>当前生效（{{ state.effective|length }}）</h2></div>
+  <div class="chips">
+    {% for name in state.effective %}<span class="chip chip-blue">{{ name }}</span>{% endfor %}
+  </div>
+</section>
+{% endblock %}

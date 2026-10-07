@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}CTF Stego WebUI{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<nav class="nav">
+  <a class="brand" href="/">⚄ Stego WebUI</a>
+  <a href="/" class="{{ 'active' if request.path == '/' else '' }}">看板</a>
+  <a href="/expected" class="{{ 'active' if request.path == '/expected' else '' }}">对答案</a>
+  <a href="/prefixes" class="{{ 'active' if request.path == '/prefixes' else '' }}">flag 前缀</a>
+  <span class="nav-stats" id="nav-stats"></span>
+</nav>
+<main>
+{% block content %}{% endblock %}
+</main>
+<div id="lightbox" class="lightbox"><img alt="预览"></div>
+<div id="toast" class="toast"></div>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

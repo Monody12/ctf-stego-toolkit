@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ctf-stego-toolkit"
-version = "1.0.0"
+version = "1.1.0"
 description = "Python toolkit for automated CTF image steganography analysis."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -31,9 +31,16 @@ image = [
   "Pillow>=9.0.0",
   "numpy>=1.20.0",
 ]
+# 本地 WebUI(看板/详情/前缀/对答案): 纯 Python 依赖, 离线环境可用
+# `pip download ".[webui]" -d wheels/` 预载后 `pip install --no-index --find-links wheels/` 安装
+webui = [
+  "flask>=3.0",
+  "flask-sqlalchemy>=3.1",
+]
 
 [project.scripts]
 ctf-stego-solve = "stego_toolkit.cli:main"
+ctf-stego-webui = "stego_toolkit.webui.app:main"
 
 [project.urls]
 Homepage = "https://github.com/Monody12/ctf-stego-toolkit"
@@ -46,3 +53,6 @@ py-modules = ["solve"]
 [tool.setuptools.packages.find]
 where = ["ctf_stego_toolkit"]
 include = ["stego_toolkit*"]
+
+[tool.setuptools.package-data]
+"stego_toolkit.webui" = ["templates/*.html", "static/*.css", "static/*.js"]

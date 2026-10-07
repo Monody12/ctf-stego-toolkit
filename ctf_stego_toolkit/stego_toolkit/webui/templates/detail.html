@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block title %}#{{ q.id }} {{ q.title }} — Stego WebUI{% endblock %}
+{% block content %}
+<section class="panel">
+  <div class="detail-head">
+    <div>
+      <h2>#{{ q.id }} {{ q.title }}
+        <span class="badge b-{{ q.status }}">{{ {'pending':'待分析','running':'分析中','done':'完成','error':'出错'}[q.status] }}</span>
+        {% if q.solved %}<span class="tag tag-green">已解</span>{% endif %}
+      </h2>
+      <p class="dim">
+        类型 {{ q.real_type or '—' }} · 疑分 {{ q.suspicion_score or 0 }}
+        · 耗时 {{ '%.1f'|format(q.elapsed or 0) }}s
+        · 录入 {{ q.created_at or '—' }} · 分析于 {{ q.analyzed_at or '—' }}
+      </p>
+      {% if q.error %}<pre class="error-box">{{ q.error }}</pre>{% endif %}
+    </div>
+    <div class="detail-actions">
+      <button class="btn act-reanalyze" data-id="{{ q.id }}">↻ 重新分析</button>
+      <button class="btn btn-danger act-delete" data-id="{{ q.id }}">✕ 删除</button>
+      <a class="btn" href="/">← 返回看板</a>
+    </div>
+  </div>
+</section>
+
+<div class="detail-grid">
+  <section class="panel">
+    <div class="panel-head"><h2>原图</h2></div>
+    {% if main_url %}
+    <img class="main-img" data-lightbox src="{{ main_url }}" alt="{{ q.title }}">
+    {% else %}<p class="dim">无文件</p>{% endif %}
+    {% if files|length > 1 %}
+    <div class="files-list">
+      <h3>全部文件（{{ files|length }}）</h3>
+      <ul>
+        {% for f in files %}
+        <li><a href="{{ f.url }}" target="_blank" rel="noopener">{{ f.name }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+  </section>
+
+  <section class="panel">
+    <div class="panel-head"><h2>flag 候选（{{ q.flags|length }}）</h2></div>
+    {% if q.flags %}
+    <ul class="flag-list">
+      {% for f in q.flags %}
+      <li class="flag-item">
+        <span class="conf c-{{ f.confidence }}">{{ {'high':'高','medium':'中','low':'低'}[f.confidence] }}</span>
+        <code class="flag-text" data-copy="{{ f.value }}">{{ f.value }}</code>
+        <button class="btn btn-sm" data-copy="{{ f.value }}">复制</button>
+        <div class="dim flag-src">{{ f.source }}</div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}<p class="dim">未自动提取到 flag — 看看下方需要人工查看的产物。</p>{% endif %}
+
+    <div class="annotate">
+      <h3>人工标注（自动保存）</h3>
+      <label>确认的 flag
+        <input type="text" id="in-confirmed" value="{{ q.confirmed_flag or '' }}" placeholder="flag{...}">
+      </label>
+      <label>expected（对答案）
+        <input type="text" id="in-expected" value="{{ q.expected_flag or '' }}" placeholder="留空表示无答案">
+      </label>
+      <label class="check"><input type="checkbox" id="in-solved" {{ 'checked' if q.solved else '' }}> 已解出</label>
+      <label>笔记 / 线索
+        <textarea id="in-notes" rows="6" placeholder="题目描述、评论区提示、自己的思路…">{{ q.notes or '' }}</textarea>
+      </label>
+    </div>
+  </section>
+</div>
+
+{% if review %}
+<section class="panel">
+  <div class="panel-head"><h2>🔍 需人工查看（{{ review|length }}）</h2></div>
+  <div class="artifact-grid">
+    {% for a in review %}
+    <figure class="artifact-card review">
+      <img data-lightbox src="{{ a.url }}" alt="{{ a.name }}" loading="lazy">
+      <figcaption><b>{{ a.name }}</b>{% if a.description %}<span class="dim">{{ a.description }}</span>{% endif %}</figcaption>
+    </figure>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% if images %}
+<section class="panel">
+  <div class="panel-head"><h2>图片产物（{{ images|length }}）</h2></div>
+  <div class="artifact-grid">
+    {% for a in images %}
+    <figure class="artifact-card">
+      <img data-lightbox src="{{ a.url }}" alt="{{ a.name }}" loading="lazy">
+      <figcaption><b>{{ a.name }}</b>{% if a.description %}<span class="dim">{{ a.description }}</span>{% endif %}</figcaption>
+    </figure>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% if texts %}
+<section class="panel">
+  <div class="panel-head"><h2>文本产物（{{ texts|length }}）</h2></div>
+  {% for a in texts %}
+  <details class="text-artifact">
+    <summary><b>{{ a.name }}</b> <span class="dim">{{ a.description }}</span></summary>
+    <pre data-media-src="{{ a.url }}">（点击展开后加载内容…）</pre>
+  </details>
+  {% endfor %}
+</section>
+{% endif %}
+
+{% if others %}
+<section class="panel">
+  <div class="panel-head"><h2>其他产物（{{ others|length }}）</h2></div>
+  <ul class="plain-list">
+    {% for a in others %}
+    <li><a href="{{ a.url }}" target="_blank" rel="noopener">{{ a.name }}</a>
+      <span class="dim">{{ a.description }}</span></li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% if q.findings %}
+<section class="panel">
+  <div class="panel-head"><h2>发现（{{ q.findings|length }}）</h2></div>
+  <ul class="findings-list">
+    {% for f in q.findings %}
+    <li class="finding lv-{{ f.level }}">
+      <span class="lv">{{ {'info':'ℹ','hint':'💡','find':'★','warn':'!','error':'✗'}[f.level] }}</span>
+      <div><b>{{ f.title }}</b>
+        {% if f.detail %}<pre class="finding-detail">{{ f.detail }}</pre>{% endif %}
+        {% if f.source %}<span class="dim">{{ f.source }}</span>{% endif %}
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% if q.log_text %}
+<section class="panel">
+  <details>
+    <summary class="panel-head summary"><h2>完整日志</h2></summary>
+    <pre class="log">{{ q.log_text }}</pre>
+  </details>
+</section>
+{% endif %}
+{% endblock %}

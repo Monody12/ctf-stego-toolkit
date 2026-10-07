@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="stats-row">
+  <div class="stat"><b id="st-total">{{ stats.total }}</b><span>题目</span></div>
+  <div class="stat st-pending"><b id="st-pending">{{ stats.pending }}</b><span>待分析</span></div>
+  <div class="stat st-running"><b id="st-running">{{ stats.running }}</b><span>分析中</span></div>
+  <div class="stat st-done"><b id="st-done">{{ stats.done }}</b><span>已完成</span></div>
+  <div class="stat st-error"><b id="st-error">{{ stats.error }}</b><span>出错</span></div>
+  <div class="stat st-hit"><b id="st-hit">{{ stats.hit }}</b><span>对答命中</span></div>
+  <div class="stat st-solved"><b id="st-solved">{{ stats.solved }}</b><span>已解出</span></div>
+</section>
+
+<section class="panel">
+  <div class="panel-head"><h2>导入题目</h2></div>
+  <div id="dropzone" class="dropzone">
+    <p><b>拖拽图片 / zip 到这里</b>，或点击选择文件（可多选）</p>
+    <p class="dim">图片直接入题；zip 按顶层子目录分组（如 misc1/ 一题），散图每张一题</p>
+    <input id="file-input" type="file" multiple accept=".png,.jpg,.jpeg,.gif,.bmp,.webp,.tif,.tiff,.zip" hidden>
+  </div>
+  <div class="import-row">
+    <input id="dir-path" type="text" placeholder="或填 WSL 本地目录/文件路径，如 /home/monody/questions（子目录=一题）">
+    <button id="btn-import-dir" class="btn">导入目录</button>
+  </div>
+  <div id="import-report" class="import-report hidden"></div>
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h2>题目列表</h2>
+    <div class="filters" id="filters">
+      <button class="chip active" data-filter="all">全部</button>
+      <button class="chip chip-warn" data-filter="unsolved">未解</button>
+      <button class="chip chip-green" data-filter="solved">已解</button>
+      <button class="chip" data-filter="pending">待分析</button>
+      <button class="chip chip-blue" data-filter="running">分析中</button>
+      <button class="chip chip-green" data-filter="done">已完成</button>
+      <button class="chip chip-red" data-filter="error">出错</button>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table class="qtable" id="qtable">
+      <thead>
+        <tr>
+          <th>预览</th><th>#</th><th>标题</th><th>状态</th><th>类型</th>
+          <th>疑分</th><th>flag 候选</th><th>对答</th><th>备注</th><th>耗时</th><th>操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for q in questions %}
+        <tr data-id="{{ q.id }}" data-status="{{ q.status }}"
+            data-match="{{ 'none' if q.expected_match is none else ('true' if q.expected_match else 'false') }}"
+            data-solved="{{ '1' if q.solved else '0' }}">
+          <td class="cell-thumb">
+            {% if q.thumb %}<img class="thumb" alt="" loading="lazy"
+                 data-lightbox src="{{ q.thumb }}">{% else %}<span class="dim">—</span>{% endif %}
+          </td>
+          <td><a href="/q/{{ q.id }}">{{ q.id }}</a></td>
+          <td class="cell-title">
+            <a href="/q/{{ q.id }}">{{ q.title }}</a>
+            {% if q.file_count > 1 %}<span class="tag">{{ q.file_count }} 文件</span>{% endif %}
+            {% if q.has_notes %}<span class="tag tag-note">📝</span>{% endif %}
+          </td>
+          <td><span class="badge b-{{ q.status }}">{{ {'pending':'待分析','running':'分析中','done':'完成','error':'出错'}[q.status] }}</span></td>
+          <td class="dim">{{ q.real_type or '—' }}</td>
+          <td class="cell-score">{{ q.suspicion_score }}</td>
+          <td class="cell-flag">
+            {% if q.top_flag %}
+              <span class="conf c-{{ q.top_conf }}">{{ {'high':'高','medium':'中','low':'低'}[q.top_conf] }}</span>
+              <code class="flag-text" data-copy="{{ q.top_flag }}">{{ q.top_flag }}</code>
+              {% if q.flag_count > 1 %}<span class="tag">+{{ q.flag_count - 1 }}</span>{% endif %}
+            {% else %}<span class="dim">—</span>{% endif %}
+          </td>
+          <td class="cell-match">
+            {% if q.expected_match is none %}<span class="dim">无答案</span>
+            {% elif q.expected_match %}<span class="match hit">✓ 命中</span>
+            {% else %}<span class="match miss">✗ 未中</span>{% endif %}
+          </td>
+          <td class="cell-misc">
+            {% if q.confirmed_flag %}<code class="flag-text" data-copy="{{ q.confirmed_flag }}">{{ q.confirmed_flag[:26] }}{% if q.confirmed_flag|length > 26 %}…{% endif %}</code>{% endif %}
+            {% if q.solved %}<span class="tag tag-green">已解</span>{% endif %}
+          </td>
+          <td class="dim cell-elapsed">{% if q.elapsed %}{{ '%.1f'|format(q.elapsed) }}s{% else %}—{% endif %}</td>
+          <td class="cell-actions">
+            <button class="btn btn-sm act-reanalyze" title="重新分析">↻</button>
+            <button class="btn btn-sm btn-danger act-delete" title="删除">✕</button>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="11" class="empty">还没有题目 — 从上方导入，或运行 scripts/fetch_bugku.py 拉取练习题</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

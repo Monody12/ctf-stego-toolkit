@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}对答案 — Stego WebUI{% endblock %}
+{% block content %}
+<section class="panel">
+  <div class="panel-head"><h2>expected 答案文件</h2></div>
+  <p class="dim">
+    上传批量答案文件（每行形如 <code>1. misc1: ctfshow{xxxxxxxx}</code>，与 CLI
+    <code>--expected-file</code> 同格式）。按题号自动关联标题含
+    <code>misc{N}</code> 的题目；看板"对答命中"列即时更新。
+  </p>
+  <div class="import-row">
+    <input id="expected-file" type="file" accept=".txt,.md,.csv" >
+    <button id="btn-upload-expected" class="btn">上传并关联</button>
+    <button id="btn-apply-expected" class="btn">重新自动关联</button>
+  </div>
+</section>
+
+<section class="panel">
+  <div class="panel-head"><h2>答案表（{{ rows|length }} 条）</h2></div>
+  {% if rows %}
+  <div class="table-wrap">
+    <table class="qtable">
+      <thead><tr><th>题号</th><th>flag</th><th></th></tr></thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          <td>misc{{ row.number }}</td>
+          <td><code class="flag-text" data-copy="{{ row.flag }}">{{ row.flag }}</code></td>
+          <td><button class="btn btn-sm" data-copy="{{ row.flag }}">复制</button></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}<p class="dim">还没有答案 — 上传 expected 文件，或在题目详情页手工填写单个 expected。</p>{% endif %}
+</section>
+{% endblock %}

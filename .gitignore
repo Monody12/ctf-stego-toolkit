@@ -22,6 +22,10 @@ Thumbs.db
 *.swp
 *.swo
 
+# Local ZCode assistant workspace (session data, tooling config) — keep out of the repo
+.zcode/
+.zcodeignore
+
 # Local challenge data / answers / generated artifacts.
 # These files may contain copyrighted CTF assets, unreleased answers, or bulky
 # solver outputs. Keep them local unless you intentionally curate examples.
@@ -32,6 +36,9 @@ questions/
 **/flags.md
 **/*题解*.md
 **/*验证报告*.md
+
+# WebUI 数据目录: 题目文件、SQLite 数据库、前缀配置, 一律不入库
+webui_data/
 
 # Scratch files generated while solving individual tasks
 misc*.png
